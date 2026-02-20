@@ -17,6 +17,7 @@ const maxConcurrentSelect = document.getElementById(
 
 const apiBaseInput = document.getElementById("apiBaseInput") as HTMLInputElement;
 const modelInput = document.getElementById("modelInput") as HTMLInputElement;
+const modelList = document.getElementById("modelList") as HTMLDataListElement;
 const apiKeyInput = document.getElementById("apiKeyInput") as HTMLInputElement;
 const statusDot = document.getElementById("statusDot")!;
 const statusText = document.getElementById("statusText")!;
@@ -31,6 +32,7 @@ function applySettings(settings: TranslatorSettings) {
     apiKeyInput.value = settings.apiKey;
 
     updateStatus(settings.enabled);
+    fetchModels(settings.apiBase, settings.apiKey);
 }
 
 function updateStatus(enabled: boolean) {
@@ -40,6 +42,36 @@ function updateStatus(enabled: boolean) {
     } else {
         statusDot.classList.remove("active");
         statusText.textContent = "비활성화됨";
+    }
+}
+
+async function fetchModels(apiBase: string, apiKey: string) {
+    if (!apiBase) return;
+    try {
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+        };
+        if (apiKey) {
+            headers["Authorization"] = `Bearer ${apiKey}`;
+        }
+
+        const url = apiBase.replace(/\/$/, "") + "/v1/models";
+        const response = await fetch(url, { headers });
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const models = Array.isArray(data.data) ? data.data : [];
+
+        modelList.innerHTML = "";
+        for (const model of models) {
+            if (model && model.id) {
+                const option = document.createElement("option");
+                option.value = model.id;
+                modelList.appendChild(option);
+            }
+        }
+    } catch (e) {
+        console.log("[SOOP Translator] Failed to fetch models:", e);
     }
 }
 
@@ -75,11 +107,17 @@ let timeout: number;
 function debounceSave() {
     clearTimeout(timeout);
     timeout = window.setTimeout(() => {
+        const apiBase = apiBaseInput.value.trim();
+        const model = modelInput.value.trim();
+        const apiKey = apiKeyInput.value.trim();
+
         saveSettings({
-            apiBase: apiBaseInput.value.trim(),
-            model: modelInput.value.trim(),
-            apiKey: apiKeyInput.value.trim()
+            apiBase,
+            model,
+            apiKey
         });
+
+        fetchModels(apiBase, apiKey);
     }, 500);
 }
 

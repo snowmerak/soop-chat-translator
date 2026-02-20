@@ -261,7 +261,9 @@
     </div>
     <div class="info-row">
       <label class="info-label" for="modelInput">모델명</label>
-      <input type="text" id="modelInput" class="custom-input" placeholder="NexaAI/Qwen3-4B-Instruct-2507-npu" />
+      <input type="text" id="modelInput" list="modelList" class="custom-input"
+        placeholder="NexaAI/Qwen3-4B-Instruct-2507-npu" />
+      <datalist id="modelList"></datalist>
     </div>
     <div class="info-row">
       <label class="info-label" for="apiKeyInput">API Key (선택)</label>
