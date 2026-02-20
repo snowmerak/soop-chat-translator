@@ -50,48 +50,54 @@ function sendTranslationRequest(text: string): Promise<string> {
     });
 }
 
-function appendTranslation(messageEl: Element, translatedText: string) {
-    const existing = messageEl.querySelector(".soop-translation");
+/**
+ * Appends (or replaces) the translation result below the original message p element.
+ * @param originalP  - the `p#message-original` element
+ * @param translatedText - the translated string
+ */
+function appendTranslation(originalP: Element, translatedText: string) {
+    const existing = originalP.parentElement?.querySelector(".soop-translation");
     if (existing) existing.remove();
 
     const span = document.createElement("span");
     span.className = "soop-translation";
-    span.textContent = ` 🌐 ${translatedText}`;
-    span.style.cssText = `
-    display: block;
-    font-size: 0.85em;
-    color: #aaaadd;
-    margin-top: 2px;
-    word-break: break-word;
-  `;
-    messageEl.appendChild(span);
+    span.textContent = `🌐 ${translatedText}`;
+    span.style.cssText = [
+        "display: block",
+        "font-size: 0.85em",
+        "color: #aaaadd",
+        "margin-top: 2px",
+        "word-break: break-word",
+        "user-select: text",
+    ].join(";");
+    // Insert right after the original p tag
+    originalP.insertAdjacentElement("afterend", span);
 }
 
-async function translateMessage(messageEl: Element) {
-    if (messageEl.getAttribute(TRANSLATED_ATTR) === "true") return;
-    messageEl.setAttribute(TRANSLATED_ATTR, "true");
+/**
+ * Translates a `p#message-original` element.
+ * The TRANSLATED_ATTR is set on the parent `.message-text` container
+ * so we never process the same message twice.
+ */
+async function translateMessage(originalP: Element) {
+    const container = originalP.parentElement;
+    if (!container) return;
+    if (container.getAttribute(TRANSLATED_ATTR) === "true") return;
+    container.setAttribute(TRANSLATED_ATTR, "true");
 
-    // Extract text content, skipping child elements like username badges
-    const textContent = Array.from(messageEl.childNodes)
-        .filter((node) => node.nodeType === Node.TEXT_NODE)
-        .map((node) => node.textContent?.trim())
-        .filter(Boolean)
-        .join(" ");
-
+    const textContent = originalP.textContent?.trim();
     if (!textContent || textContent.length < 2) return;
 
     return new Promise<void>((resolve) => {
         enqueue(async () => {
             try {
                 const translated = await sendTranslationRequest(textContent);
-                // Only append if meaningfully different from original
                 if (translated && translated !== textContent) {
-                    appendTranslation(messageEl, translated);
+                    appendTranslation(originalP, translated);
                 }
             } catch (err) {
                 console.warn("[SOOP Translator] Failed to translate:", err);
-                // Reset so it can be retried on next observation
-                messageEl.removeAttribute(TRANSLATED_ATTR);
+                container.removeAttribute(TRANSLATED_ATTR);
             } finally {
                 isProcessing = false;
                 processQueue();
@@ -102,25 +108,16 @@ async function translateMessage(messageEl: Element) {
 }
 
 /**
- * SOOP chat message selectors.
- * These may need updating if SOOP changes their DOM structure.
+ * SOOP DOM structure (confirmed):
+ *   div.message-text[id="<numeric-id>"]   ← message container
+ *     p#message-original                  ← chat message text
  *
- * Known selectors:
- *  - .chat_list li .chat_txt  (classic SOOP layout)
- *  - .chatting-list .message  (newer layout)
+ * We query for `p#message-original` inside `.message-text[id]` containers.
  */
-const CHAT_MESSAGE_SELECTORS = [
-    ".chat_list li .chat_txt",
-    ".chatting-list .message",
-    ".chat-list-wrap li .chat-text",
-];
+const MESSAGE_ORIGINAL_SELECTOR = ".message-text[id] p#message-original";
 
 function findChatMessages(root: Element | Document): Element[] {
-    for (const selector of CHAT_MESSAGE_SELECTORS) {
-        const els = Array.from(root.querySelectorAll(selector));
-        if (els.length > 0) return els;
-    }
-    return [];
+    return Array.from(root.querySelectorAll(MESSAGE_ORIGINAL_SELECTOR));
 }
 
 function observeChat() {
@@ -129,15 +126,21 @@ function observeChat() {
             for (const node of mutation.addedNodes) {
                 if (!(node instanceof Element)) continue;
 
-                // Check if it's a chat message itself
-                if (CHAT_MESSAGE_SELECTORS.some((sel) => node.matches(sel))) {
+                // Case 1: added node is p#message-original directly
+                if (node.matches("p#message-original")) {
                     translateMessage(node);
                     continue;
                 }
 
-                // Or if it contains chat messages
-                const messages = findChatMessages(node);
-                for (const msg of messages) {
+                // Case 2: added node is .message-text container (contains p#message-original)
+                const found = node.querySelector("p#message-original");
+                if (found) {
+                    translateMessage(found);
+                    continue;
+                }
+
+                // Case 3: some ancestor was added — scan descendants
+                for (const msg of findChatMessages(node)) {
                     translateMessage(msg);
                 }
             }
