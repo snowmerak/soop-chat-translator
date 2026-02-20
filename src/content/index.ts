@@ -106,10 +106,12 @@ async function translateMessage(originalP: Element) {
     container.setAttribute(TRANSLATED_ATTR, "true");
 
     const clone = originalP.cloneNode(true) as Element;
-    const nativeBtn = clone.querySelector("#btn-translate");
-    if (nativeBtn) nativeBtn.remove();
+    clone.querySelectorAll("button, [id='btn-translate']").forEach(el => el.remove());
 
-    const textContent = clone.textContent?.trim() || "";
+    let textContent = clone.textContent?.trim() || "";
+    if (textContent.endsWith("번역")) {
+        textContent = textContent.replace(/번역$/, "").trim();
+    }
     if (!textContent || textContent.length < 2) return;
 
     return new Promise<void>((resolve) => {
