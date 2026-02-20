@@ -121,9 +121,9 @@ chrome.runtime.onMessage.addListener(
                     settings.apiKey
                 );
 
-                console.log(`[SOOP Translator] Sending API request to: ${settings.apiBase} | Model: ${settings.model}`);
+                console.log(`[SOOP Translator] Sending API request to: ${settings.apiBase} | Model: ${settings.model} | Source: ${settings.sourceLang} -> Target: ${settings.targetLang}`);
 
-                const result = await client.translate(message.text, settings.targetLang);
+                const result = await client.translate(message.text, settings.targetLang, settings.sourceLang);
 
                 cacheSet(cacheKey, result);
                 sendResponse({ success: true, result, cached: false });

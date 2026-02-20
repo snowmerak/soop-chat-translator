@@ -34,13 +34,14 @@ export class TranslatorClient {
         this.apiKey = apiKey;
     }
 
-    async translate(text: string, targetLang: string): Promise<string> {
+    async translate(text: string, targetLang: string, sourceLang?: string): Promise<string> {
+        const sourceHint = (sourceLang && sourceLang !== "Auto") ? ` ${sourceLang} ` : " ";
         const request: ChatCompletionRequest = {
             model: this.model,
             messages: [
                 {
                     role: "user",
-                    content: `Translate this chat message to ${targetLang}. You MUST output strictly in JSON format like this: {"translation": "..."}\nDo not add any explanation or notes.\nMessage:\n${text}`,
+                    content: `Translate this${sourceHint}chat message to ${targetLang}. You MUST output strictly in JSON format like this: {"translation": "..."}\nDo not add any explanation or notes.\nMessage:\n${text}`,
                 },
             ],
             temperature: 0.1,

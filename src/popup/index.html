@@ -231,6 +231,28 @@
   </div>
 
   <div class="control-row">
+    <label for="enableToggle">번역 활성화</label>
+    <label class="toggle">
+      <input type="checkbox" id="enableToggle" />
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+
+  <div class="control-row">
+    <label for="sourceLang">원본 언어</label>
+    <select id="sourceLang">
+      <option value="Auto">자동 감지 (Auto)</option>
+      <option value="Korean">한국어</option>
+      <option value="English">English</option>
+      <option value="Japanese">日本語</option>
+      <option value="Chinese (Simplified)">中文 (简体)</option>
+      <option value="Spanish">Español</option>
+      <option value="French">Français</option>
+      <option value="Thai">ภาษาไทย</option>
+    </select>
+  </div>
+
+  <div class="control-row">
     <label for="targetLang">번역 언어</label>
     <select id="targetLang">
       <option value="Korean">한국어</option>

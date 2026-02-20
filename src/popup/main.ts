@@ -8,6 +8,9 @@ import { DEFAULT_SETTINGS, type TranslatorSettings } from "../config/defaults";
 const enableToggle = document.getElementById(
     "enableToggle"
 ) as HTMLInputElement;
+const sourceLangSelect = document.getElementById(
+    "sourceLang"
+) as HTMLSelectElement;
 const targetLangSelect = document.getElementById(
     "targetLang"
 ) as HTMLSelectElement;
@@ -24,6 +27,7 @@ const statusText = document.getElementById("statusText")!;
 
 function applySettings(settings: TranslatorSettings) {
     enableToggle.checked = settings.enabled;
+    sourceLangSelect.value = settings.sourceLang || "Auto";
     targetLangSelect.value = settings.targetLang;
     maxConcurrentSelect.value = settings.maxConcurrentRequests.toString();
 
@@ -96,6 +100,10 @@ enableToggle.addEventListener("change", () => {
 
 targetLangSelect.addEventListener("change", () => {
     saveSettings({ targetLang: targetLangSelect.value });
+});
+
+sourceLangSelect.addEventListener("change", () => {
+    saveSettings({ sourceLang: sourceLangSelect.value });
 });
 
 maxConcurrentSelect.addEventListener("change", () => {

@@ -1,0 +1,1 @@
+const A="http://localhost:18181",E="NexaAI/Qwen3-4B-Instruct-2507-npu",t="Auto",n="Korean";const L="",o={apiBase:A,model:E,apiKey:L,sourceLang:t,targetLang:n,enabled:!1,maxConcurrentRequests:3};export{o as D};
