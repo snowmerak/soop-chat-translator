@@ -7,7 +7,7 @@
 
 interface ChatCompletionRequest {
     model: string;
-    messages: Array<{ role: "user"; content: string }>;
+    messages: Array<{ role: "system" | "user"; content: string }>;
     temperature: number;
     top_p: number;
     max_completion_tokens: number;
@@ -40,8 +40,12 @@ export class TranslatorClient {
             model: this.model,
             messages: [
                 {
+                    role: "system",
+                    content: "You are an expert live chat translator. Translate internet slang and idioms naturally into context."
+                },
+                {
                     role: "user",
-                    content: `Translate this${sourceHint}chat message to ${targetLang}. You MUST output strictly in JSON format like this: {"translation": "..."}\nDo not add any explanation or notes.\nMessage:\n${text}`,
+                    content: `Translate this${sourceHint}message to ${targetLang}. Output strictly JSON: {"translation": "..."}\nMessage: ${text}`,
                 },
             ],
             temperature: 0.1,
