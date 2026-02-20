@@ -1,244 +1,281 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SOOP Chat Translator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
 
-      body {
-        font-family: "Inter", system-ui, sans-serif;
-        background: #0f0f18;
-        color: #e2e2f0;
-        width: 300px;
-        min-height: 320px;
-        padding: 20px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOOP Chat Translator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #2a2a40;
-      }
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background: #0f0f18;
+      color: #e2e2f0;
+      width: 300px;
+      min-height: 320px;
+      padding: 20px;
+    }
 
-      header .logo {
-        font-size: 1.4rem;
-      }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2a40;
+    }
 
-      header h1 {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #c5b4fc;
-        letter-spacing: -0.01em;
-      }
+    header .logo {
+      font-size: 1.4rem;
+    }
 
-      header p {
-        font-size: 0.7rem;
-        color: #666688;
-        margin-top: 2px;
-      }
+    header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #c5b4fc;
+      letter-spacing: -0.01em;
+    }
 
-      .control-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
-      }
+    header p {
+      font-size: 0.7rem;
+      color: #666688;
+      margin-top: 2px;
+    }
 
-      .control-row label {
-        font-size: 0.88rem;
-        font-weight: 500;
-        color: #b0b0c8;
-      }
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
 
-      /* Toggle Switch */
-      .toggle {
-        position: relative;
-        width: 44px;
-        height: 24px;
-      }
+    .control-row label {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #b0b0c8;
+    }
 
-      .toggle input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
+    /* Toggle Switch */
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
 
-      .toggle-slider {
-        position: absolute;
-        inset: 0;
-        background: #2a2a40;
-        border-radius: 24px;
-        cursor: pointer;
-        transition: background 0.25s;
-      }
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
 
-      .toggle-slider::before {
-        content: "";
-        position: absolute;
-        width: 18px;
-        height: 18px;
-        background: #666688;
-        border-radius: 50%;
-        top: 3px;
-        left: 3px;
-        transition: transform 0.25s, background 0.25s;
-      }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #2a2a40;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
 
-      .toggle input:checked + .toggle-slider {
-        background: #7c5cbf;
-      }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #666688;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.25s, background 0.25s;
+    }
 
-      .toggle input:checked + .toggle-slider::before {
-        transform: translateX(20px);
-        background: #c5b4fc;
-      }
+    .toggle input:checked+.toggle-slider {
+      background: #7c5cbf;
+    }
 
-      /* Select */
-      select {
-        background: #1a1a2e;
-        color: #e2e2f0;
-        border: 1px solid #2a2a40;
-        border-radius: 8px;
-        padding: 6px 10px;
-        font-family: inherit;
-        font-size: 0.82rem;
-        cursor: pointer;
-        outline: none;
-        transition: border-color 0.2s;
-      }
+    .toggle input:checked+.toggle-slider::before {
+      transform: translateX(20px);
+      background: #c5b4fc;
+    }
 
-      select:focus {
-        border-color: #7c5cbf;
-      }
+    /* Select */
+    select {
+      background: #1a1a2e;
+      color: #e2e2f0;
+      border: 1px solid #2a2a40;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
 
-      /* Info section */
-      .info-section {
-        margin-top: 20px;
-        padding: 12px;
-        background: #1a1a2e;
-        border-radius: 10px;
-        border: 1px solid #2a2a40;
-      }
+    select:focus {
+      border-color: #7c5cbf;
+    }
 
-      .info-section h2 {
-        font-size: 0.72rem;
-        font-weight: 600;
-        color: #666688;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 8px;
-      }
+    /* Info section */
+    .info-section {
+      margin-top: 20px;
+      padding: 12px;
+      background: #1a1a2e;
+      border-radius: 10px;
+      border: 1px solid #2a2a40;
+    }
 
-      .info-row {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 8px;
-      }
+    .info-section h2 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #666688;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
 
-      .info-row:last-child {
-        margin-bottom: 0;
-      }
+    .info-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 8px;
+    }
 
-      .info-row .info-label {
-        font-size: 0.7rem;
-        color: #555570;
-        margin-bottom: 2px;
-      }
+    .info-row:last-child {
+      margin-bottom: 0;
+    }
 
-      .info-row .info-value {
-        font-size: 0.78rem;
-        color: #9990cc;
-        font-family: "JetBrains Mono", "Fira Code", monospace;
-        word-break: break-all;
-      }
+    .info-row .info-label {
+      font-size: 0.7rem;
+      color: #555570;
+      margin-bottom: 2px;
+    }
 
-      /* Status indicator */
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 0.75rem;
-        margin-top: 16px;
-        color: #666688;
-      }
+    .info-row .info-value {
+      font-size: 0.78rem;
+      color: #9990cc;
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      word-break: break-all;
+    }
 
-      .status-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: #444460;
-        transition: background 0.3s;
-      }
+    /* Custom Input */
+    .custom-input {
+      background: #0f0f18;
+      color: #e2e2f0;
+      border: 1px solid #2a2a40;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
 
-      .status-dot.active {
-        background: #7fffd4;
-        box-shadow: 0 0 6px #7fffd480;
-      }
-    </style>
-    <script type="module" crossorigin src="/popup.js"></script>
-    <link rel="modulepreload" crossorigin href="/chunks/defaults-BtCEwwT1.js">
-  </head>
-  <body>
-    <header>
-      <span class="logo">🌐</span>
-      <div>
-        <h1>SOOP Chat Translator</h1>
-        <p>Powered by Snapdragon NPU</p>
-      </div>
-    </header>
+    .custom-input:focus {
+      border-color: #7c5cbf;
+    }
 
-    <div class="control-row">
-      <label for="enableToggle">번역 활성화</label>
-      <label class="toggle">
-        <input type="checkbox" id="enableToggle" />
-        <span class="toggle-slider"></span>
-      </label>
+    .custom-input::placeholder {
+      color: #444460;
+    }
+
+    /* Status indicator */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      margin-top: 16px;
+      color: #666688;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #444460;
+      transition: background 0.3s;
+    }
+
+    .status-dot.active {
+      background: #7fffd4;
+      box-shadow: 0 0 6px #7fffd480;
+    }
+  </style>
+  <script type="module" crossorigin src="/popup.js"></script>
+  <link rel="modulepreload" crossorigin href="/chunks/defaults-BGNKfFu1.js">
+</head>
+
+<body>
+  <header>
+    <span class="logo">🌐</span>
+    <div>
+      <h1>SOOP Chat Translator</h1>
+      <p>Powered by Snapdragon NPU</p>
     </div>
+  </header>
 
-    <div class="control-row">
-      <label for="targetLang">번역 언어</label>
-      <select id="targetLang">
-        <option value="Korean">한국어</option>
-        <option value="English">English</option>
-        <option value="Japanese">日本語</option>
-        <option value="Chinese (Simplified)">中文 (简体)</option>
-        <option value="Spanish">Español</option>
-        <option value="French">Français</option>
-      </select>
-    </div>
+  <div class="control-row">
+    <label for="enableToggle">번역 활성화</label>
+    <label class="toggle">
+      <input type="checkbox" id="enableToggle" />
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
 
-    <div class="info-section">
-      <h2>NPU 서버 설정</h2>
-      <div class="info-row">
-        <span class="info-label">API 주소</span>
-        <span class="info-value" id="apiBaseDisplay">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">모델</span>
-        <span class="info-value" id="modelDisplay">—</span>
-      </div>
-    </div>
+  <div class="control-row">
+    <label for="targetLang">번역 언어</label>
+    <select id="targetLang">
+      <option value="Korean">한국어</option>
+      <option value="English">English</option>
+      <option value="Japanese">日本語</option>
+      <option value="Chinese (Simplified)">中文 (简体)</option>
+      <option value="Spanish">Español</option>
+      <option value="French">Français</option>
+    </select>
+  </div>
 
-    <div class="status-badge">
-      <span class="status-dot" id="statusDot"></span>
-      <span id="statusText">비활성화됨</span>
+  <div class="control-row">
+    <label for="maxConcurrent">동시 변역 수</label>
+    <select id="maxConcurrent">
+      <option value="1">1 (순차)</option>
+      <option value="2">2 (보통)</option>
+      <option value="3">3 (빠름)</option>
+      <option value="4">4 (매우 빠름)</option>
+      <option value="5">5 (최대)</option>
+    </select>
+  </div>
+
+  <div class="info-section" id="npuSettingsSection">
+    <h2>NPU / 외부 API 설정</h2>
+    <div class="info-row">
+      <label class="info-label" for="apiBaseInput">API 주소</label>
+      <input type="text" id="apiBaseInput" class="custom-input" placeholder="http://localhost:18181" />
     </div>
+    <div class="info-row">
+      <label class="info-label" for="modelInput">모델명</label>
+      <input type="text" id="modelInput" class="custom-input" placeholder="NexaAI/Qwen3-4B-Instruct-2507-npu" />
+    </div>
+    <div class="info-row">
+      <label class="info-label" for="apiKeyInput">API Key (선택)</label>
+      <input type="password" id="apiKeyInput" class="custom-input" placeholder="sk-..." />
+    </div>
+  </div>
+
+  <div class="status-badge">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">비활성화됨</span>
+  </div>
 
-  </body>
+</body>
+
 </html>

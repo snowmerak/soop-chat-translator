@@ -26,10 +26,12 @@ interface ChatCompletionResponse {
 export class TranslatorClient {
     private baseUrl: string;
     private model: string;
+    private apiKey?: string;
 
-    constructor(baseUrl: string, model: string) {
+    constructor(baseUrl: string, model: string, apiKey?: string) {
         this.baseUrl = baseUrl.replace(/\/$/, "");
         this.model = model;
+        this.apiKey = apiKey;
     }
 
     async translate(text: string, targetLang: string): Promise<string> {
@@ -50,9 +52,16 @@ export class TranslatorClient {
             enable_json: true,
         };
 
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+        };
+        if (this.apiKey) {
+            headers["Authorization"] = `Bearer ${this.apiKey}`;
+        }
+
         const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers,
             body: JSON.stringify(request),
         });
 

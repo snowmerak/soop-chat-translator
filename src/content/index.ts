@@ -12,20 +12,40 @@ interface TranslateResponse {
     success: boolean;
     result?: string;
     error?: string;
+    cached?: boolean;
+    skipped?: boolean;
 }
+
+// Global reference for MAX_CONCURRENT so the queue can adapt dynamically
+let currentMaxConcurrent = 3;
+
+// Keep track of settings updates
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.maxConcurrentRequests) {
+        currentMaxConcurrent = changes.maxConcurrentRequests.newValue || 3;
+        processQueue(); // Maybe we can run more now
+    }
+});
+chrome.storage.local.get("maxConcurrentRequests", (res) => {
+    if (res.maxConcurrentRequests) currentMaxConcurrent = res.maxConcurrentRequests;
+});
 
 // Translated message attribute to avoid re-translating
 const TRANSLATED_ATTR = "data-soop-translated";
 
-// Queue for throttling translation requests
+// Queue for translation requests
 let translationQueue: Array<() => void> = [];
-let isProcessing = false;
+let inFlightCount = 0;
 
 async function processQueue() {
-    if (isProcessing || translationQueue.length === 0) return;
-    isProcessing = true;
-    const task = translationQueue.shift()!;
-    task();
+    // Keep pulling from queue as long as we have limit to spare
+    while (translationQueue.length > 0 && inFlightCount < currentMaxConcurrent) {
+        const task = translationQueue.shift();
+        if (task) {
+            inFlightCount++;
+            task(); // Task is responsible for decrementing inFlightCount and calling processQueue()
+        }
+    }
 }
 
 function enqueue(fn: () => void) {
@@ -99,7 +119,7 @@ async function translateMessage(originalP: Element) {
                 console.warn("[SOOP Translator] Failed to translate:", err);
                 container.removeAttribute(TRANSLATED_ATTR);
             } finally {
-                isProcessing = false;
+                inFlightCount--;
                 processQueue();
                 resolve();
             }

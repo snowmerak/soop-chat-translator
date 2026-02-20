@@ -11,16 +11,25 @@ const enableToggle = document.getElementById(
 const targetLangSelect = document.getElementById(
     "targetLang"
 ) as HTMLSelectElement;
-const apiBaseDisplay = document.getElementById("apiBaseDisplay")!;
-const modelDisplay = document.getElementById("modelDisplay")!;
+const maxConcurrentSelect = document.getElementById(
+    "maxConcurrent"
+) as HTMLSelectElement;
+
+const apiBaseInput = document.getElementById("apiBaseInput") as HTMLInputElement;
+const modelInput = document.getElementById("modelInput") as HTMLInputElement;
+const apiKeyInput = document.getElementById("apiKeyInput") as HTMLInputElement;
 const statusDot = document.getElementById("statusDot")!;
 const statusText = document.getElementById("statusText")!;
 
 function applySettings(settings: TranslatorSettings) {
     enableToggle.checked = settings.enabled;
     targetLangSelect.value = settings.targetLang;
-    apiBaseDisplay.textContent = settings.apiBase;
-    modelDisplay.textContent = settings.model;
+    maxConcurrentSelect.value = settings.maxConcurrentRequests.toString();
+
+    apiBaseInput.value = settings.apiBase;
+    modelInput.value = settings.model;
+    apiKeyInput.value = settings.apiKey;
+
     updateStatus(settings.enabled);
 }
 
@@ -56,3 +65,24 @@ enableToggle.addEventListener("change", () => {
 targetLangSelect.addEventListener("change", () => {
     saveSettings({ targetLang: targetLangSelect.value });
 });
+
+maxConcurrentSelect.addEventListener("change", () => {
+    saveSettings({ maxConcurrentRequests: parseInt(maxConcurrentSelect.value, 10) });
+});
+
+// Use a simple debounce for text inputs to avoid spamming storage writes
+let timeout: number;
+function debounceSave() {
+    clearTimeout(timeout);
+    timeout = window.setTimeout(() => {
+        saveSettings({
+            apiBase: apiBaseInput.value.trim(),
+            model: modelInput.value.trim(),
+            apiKey: apiKeyInput.value.trim()
+        });
+    }, 500);
+}
+
+apiBaseInput.addEventListener("input", debounceSave);
+modelInput.addEventListener("input", debounceSave);
+apiKeyInput.addEventListener("input", debounceSave);

@@ -114,7 +114,15 @@ chrome.runtime.onMessage.addListener(
                     }
                 }
 
-                const client = new TranslatorClient(settings.apiBase, settings.model);
+                // Translate using the local NPU / external API
+                const client = new TranslatorClient(
+                    settings.apiBase,
+                    settings.model,
+                    settings.apiKey
+                );
+
+                console.log(`[SOOP Translator] Sending API request to: ${settings.apiBase} | Model: ${settings.model}`);
+
                 const result = await client.translate(message.text, settings.targetLang);
 
                 cacheSet(cacheKey, result);
