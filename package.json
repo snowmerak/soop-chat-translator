@@ -1,0 +1,30 @@
+{
+  "name": "soop-chat-translator",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Chrome extension to translate SOOP live chat using local Snapdragon NPU via OpenAI-compatible API",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git-snowmerak-github-com:snowmerak/soop-chat-translator.git"
+  },
+  "keywords": [
+    "chrome-extension",
+    "soop",
+    "afreecatv",
+    "translation",
+    "npu"
+  ],
+  "author": "snowmerak",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.0"
+  }
+}
