@@ -105,7 +105,11 @@ async function translateMessage(originalP: Element) {
     if (container.getAttribute(TRANSLATED_ATTR) === "true") return;
     container.setAttribute(TRANSLATED_ATTR, "true");
 
-    const textContent = originalP.textContent?.trim();
+    const clone = originalP.cloneNode(true) as Element;
+    const nativeBtn = clone.querySelector("#btn-translate");
+    if (nativeBtn) nativeBtn.remove();
+
+    const textContent = clone.textContent?.trim() || "";
     if (!textContent || textContent.length < 2) return;
 
     return new Promise<void>((resolve) => {
